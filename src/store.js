@@ -10,34 +10,43 @@ export class Store {
     // Auto install if it is not done yet and `window` has `Vue`.
     // To allow users to avoid auto-installation in some cases,
     // this code should be placed here. See #731
+    // 如果还没有完成并且`window`有`Vue`，则自动安装。
+    // 为了允许用户在某些情况下避免自动安装，
+    // 这段代码应该放在这里。 见#731
     if (!Vue && typeof window !== 'undefined' && window.Vue) {
       install(window.Vue)
     }
 
+    // 断言处理
     if (__DEV__) {
       assert(Vue, `must call Vue.use(Vuex) before creating a store instance.`)
       assert(typeof Promise !== 'undefined', `vuex requires a Promise polyfill in this browser.`)
       assert(this instanceof Store, `store must be called with the new operator.`)
     }
 
+    // 解构
+    // cosnt plugins=options.plugins，默认值为[]
+    // cosnt strict=options.strict，默认值为false
     const {
       plugins = [],
       strict = false
     } = options
 
     // store internal state
+    // 存储内部状态
     this._committing = false
     this._actions = Object.create(null)
     this._actionSubscribers = []
     this._mutations = Object.create(null)
     this._wrappedGetters = Object.create(null)
-    this._modules = new ModuleCollection(options)
+    this._modules = new ModuleCollection(options) // 收集modules，如果options中没有modules属性，则
     this._modulesNamespaceMap = Object.create(null)
     this._subscribers = []
     this._watcherVM = new Vue()
     this._makeLocalGettersCache = Object.create(null)
 
     // bind commit and dispatch to self
+    // 将 commit 和 dispatch 绑定到 self
     const store = this
     const { dispatch, commit } = this
     this.dispatch = function boundDispatch (type, payload) {
@@ -49,16 +58,20 @@ export class Store {
 
     // strict mode
     this.strict = strict
-
+    // 当前的state是options中的state
     const state = this._modules.root.state
 
     // init root module.
     // this also recursively registers all sub-modules
     // and collects all module getters inside this._wrappedGetters
+    // 初始化根模块。
+    // 这也递归注册所有子模块
+    // 并收集 this._wrappedGetters 中的所有模块 getter
     installModule(this, state, [], this._modules.root)
 
     // initialize the store vm, which is responsible for the reactivity
     // (also registers _wrappedGetters as computed properties)
+    // 初始化 store vm，它负责反应性（还将 _wrappedGetters 注册为计算属性）
     resetStoreVM(this, state)
 
     // apply plugins
@@ -382,6 +395,8 @@ function installModule (store, rootState, path, module, hot) {
 /**
  * make localized dispatch, commit, getters and state
  * if there is no namespace, just use root ones
+ * 进行本地化的调度、提交、getter 和 state
+ * 如果没有命名空间，就使用根命名空间
  */
 function makeLocalContext (store, namespace, path) {
   const noNamespace = namespace === ''
@@ -536,6 +551,9 @@ function unifyObjectStyle (type, payload, options) {
   return { type, payload, options }
 }
 
+/**
+ * 工程化时使用插件方式导入
+ */
 export function install (_Vue) {
   if (Vue && _Vue === Vue) {
     if (__DEV__) {
@@ -546,5 +564,6 @@ export function install (_Vue) {
     return
   }
   Vue = _Vue
+  // 通过Vue.Mixin每一个组件都会执行
   applyMixin(Vue)
 }

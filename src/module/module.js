@@ -10,7 +10,7 @@ export default class Module {
     this._rawModule = rawModule
     const rawState = rawModule.state
 
-    // Store the origin module's state
+    // Store the origin module's state  => options.state
     this.state = (typeof rawState === 'function' ? rawState() : rawState) || {}
   }
 

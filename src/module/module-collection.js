@@ -29,9 +29,10 @@ export default class ModuleCollection {
     if (__DEV__) {
       assertRawModule(path, rawModule)
     }
-
+    // 把options 组成一个module
     const newModule = new Module(rawModule, runtime)
     if (path.length === 0) {
+      // 此类声明 root 属性，值为options module
       this.root = newModule
     } else {
       const parent = this.get(path.slice(0, -1))
